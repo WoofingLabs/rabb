@@ -111,9 +111,9 @@
             <h2>三、加入网络</h2>
             <p>用户需支付 <span class="highlight">0.1 OKB</span> 加入 XFist 网络，成为正式参与者。规则如下：</p>
             <ul>
-                <li><strong>推荐人机制</strong>：可提供有效推荐人地址（X Layer 有效地址），若留空，系统将指定默认推荐人地址。</li>
+                <li><strong>推荐人机制</strong>：可提供有效推荐人地址（X Layer 有效地址，需已加入网络），若留空，系统将指定默认推荐人地址。</li>
                 <li><strong>费用</strong>：支付 0.1 OKB，进入奖励池并支持网络运营。</li>
-                <li><strong>状态</strong>：加入后可查看推荐信息、质押状态和待领取 XFIST 奖励。</li>
+                <li><strong>状态</strong>：加入后可查看推荐信息、质押状态和待领取 XFIST 奖励（推荐奖励和质押奖励总和）。</li>
             </ul>
             <p>加入网络是参与质押和节点功能的前提，未加入用户无法操作。</p>
         </div>
@@ -134,7 +134,7 @@
             <h2>五、质押规则</h2>
             <p>用户通过质押 XFIST 参与奖励分配，规则如下：</p>
             <ul>
-                <li><strong>最低质押量</strong>：每次质押为 <span class="highlight">10000 XFIST</span> 的整数倍（如 10000、20000 等）。</li>
+                <li><strong>最低质押量</strong>：每次质押为 <span class="highlight">10,000 XFIST</span> 的整数倍（如 10,000、20,000 等）。</li>
                 <li><strong>节点选择</strong>：需指定有效节点 ID（由注册节点提供）。</li>
                 <li><strong>质押操作</strong>：通过 DApp 输入节点 ID 和质押数量，或选择余额的 25%、50%、75%、100% 快速质押。</li>
                 <li><strong>提取质押</strong>：随时提取 XFIST 本金及累积 XFIST 奖励，无锁定期。</li>
@@ -159,13 +159,13 @@
                 </tr>
                 <tr>
                     <td>质押奖励（XFIST）</td>
-                    <td>每 10000 XFIST 每区块奖励，基于当前奖励基数</td>
+                    <td>每 10,000 XFIST 每区块奖励，基于当前奖励基数</td>
                     <td>初始：<span class="highlight">0.00025 XFIST/区块</span><br>最低：<span class="highlight">0.000005 XFIST/区块</span></td>
                 </tr>
                 <tr>
                     <td>节点奖励（XFIST）</td>
                     <td>节点获质押奖励的 10% 分成</td>
-                    <td>例：100000 XFIST 质押，节点获 <span class="highlight">0.000025 XFIST/区块</span>（0.00025 × 10%）</td>
+                    <td>例：100,000 XFIST 质押，节点获 <span class="highlight">0.000025 XFIST/区块</span>（0.00025 × 10%）</td>
                 </tr>
                 <tr>
                     <td>推荐奖励（XFIST）</td>
@@ -174,12 +174,12 @@
                 </tr>
                 <tr>
                     <td>推荐奖励（OKB）</td>
-                    <td>推荐人获新用户加入费用（0.1 OKB）的 3%-0.5%（10 层递减）</td>
+                    <td>推荐人获新用户加入费用（0.1 OKB）的 3%-0.5%（10 层递减），最大 10,000 OKB/用户</td>
                     <td>第 1 层：<span class="highlight">0.03 OKB</span><br>第 2 层：<span class="highlight">0.02 OKB</span><br>第 3-4 层：<span class="highlight">0.01 OKB</span><br>第 5-10 层：<span class="highlight">0.005 OKB</span></td>
                 </tr>
                 <tr>
                     <td>领取方式</td>
-                    <td>质押和节点奖励在提取质押时自动发放，推荐 OKB 奖励在下级加入时发放，推荐 XFIST 奖励在下级加入或提取质押时发放</td>
+                    <td>质押和节点奖励在质押或提取质押时自动发放，推荐 OKB 奖励在下级加入时发放，推荐 XFIST 奖励在下级加入或提取质押时发放</td>
                     <td>无需单独操作</td>
                 </tr>
             </table>
@@ -198,28 +198,28 @@
                 <tr>
                     <td>初始奖励</td>
                     <td>每区块的 XFIST 奖励基数</td>
-                    <td>推荐人：<span class="highlight">5 XFIST/区块</span><br>质押（每 10000 XFIST）：<span class="highlight">0.00025 XFIST/区块</span></td>
+                    <td>推荐人：<span class="highlight">5 XFIST/区块</span><br>质押（每 10,000 XFIST）：<span class="highlight">0.00025 XFIST/区块</span></td>
                 </tr>
                 <tr>
                     <td>最低奖励</td>
                     <td>奖励基数的最低值</td>
-                    <td>推荐人：<span class="highlight">0.1 XFIST/区块</span><br>质押（每 10000 XFIST）：<span class="highlight">0.000005 XFIST/区块</span></td>
+                    <td>推荐人：<span class="highlight">0.1 XFIST/区块</span><br>质押（每 10,000 XFIST）：<span class="highlight">0.000005 XFIST/区块</span></td>
                 </tr>
                 <tr>
                     <td>减产周期</td>
-                    <td>每 6000000 区块（约 27.78 天，0.4 秒/区块）减产一次</td>
-                    <td><span class="highlight">6000000 区块</span></td>
+                    <td>每 6,000,000 区块（约 27.78 天，0.4 秒/区块）减产一次</td>
+                    <td><span class="highlight">6,000,000 区块</span></td>
                 </tr>
                 <tr>
                     <td>减产幅度</td>
-                    <td>每周期奖励基数减少，公式：base = 50 - (effectiveBlocks / 6000000)</td>
+                    <td>每周期奖励基数减少，公式：base = 50 - (effectiveBlocks / 6,000,000)</td>
                     <td>每周期减少约 <span class="highlight">2%（1/50）</span></td>
                 </tr>
                 <tr>
                     <td>减产计划</td>
-                    <td>示例减产阶段（每 6000000 区块）：
+                    <td>示例减产阶段（每 6,000,000 区块）：
                         <ul>
-                            <li>第 1 周期（0-6M 区块）：5 XFIST，0.00025 XFIST（每 10000 XFIST）</li>
+                            <li>第 1 周期（0-6M 区块）：5 XFIST，0.00025 XFIST（每 10,000 XFIST）</li>
                             <li>第 2 周期（6M-12M 区块）：4.9 XFIST，0.000245 XFIST</li>
                             <li>第 3 周期（12M-18M 区块）：4.8 XFIST，0.00024 XFIST</li>
                             <li>…</li>
@@ -241,11 +241,11 @@
             <h2>八、推荐系统</h2>
             <p>推荐机制激励用户邀请新用户，规则如下：</p>
             <ul>
-                <li><strong>推荐奖励（OKB）</strong>：推荐人获新用户加入费用（0.1 OKB）的 3%-0.5%（10 层递减），分别为 0.03、0.02、0.01、0.01、0.005、0.005、0.005、0.005、0.005、0.005 OKB。</li>
+                <li><strong>推荐奖励（OKB）</strong>：推荐人获新用户加入费用（0.1 OKB）的 3%-0.5%（10 层递减），分别为 0.03、0.02、0.01、0.01、0.005、0.005、0.005、0.005、0.005、0.005 OKB，单用户最大 10,000 OKB。</li>
                 <li><strong>推荐奖励（XFIST）</strong>：推荐人每区块获基础奖励（初始 5 XFIST）+ 10% 加成/推荐人数。</li>
                 <li><strong>推荐信息</strong>：显示推荐人数和推荐人地址（无推荐人显示“无”）。</li>
                 <li><strong>默认推荐人</strong>：用户可留空推荐人地址，系统将自动分配默认推荐人。</li>
-                <li><strong>层级限制</strong>：最多 10 层推荐路径，确保公平分配。</li>
+                <li><strong>层级限制</strong>：最多 10 层推荐路径，防止循环引用，确保公平分配。</li>
             </ul>
             <p>推荐系统通过 XFIST 和 OKB 奖励激励社区增长。</p>
         </div>
@@ -264,7 +264,7 @@
 
         <div class="section">
             <h2>十、总结</h2>
-            <p>XFist DApp 通过质押和推荐机制激励用户参与 X Layer 生态建设。用户可通过加入网络（0.1 OKB）、成为节点（1 OKB）、质押 XFIST（最低 10000 XFIST）及邀请新用户获得 XFIST 奖励，推荐人额外获得 OKB 奖励。灵活的提取机制和透明的减产计划确保公平收益，推动去中心化金融发展。</p>
+            <p>XFist DApp 通过质押和推荐机制激励用户参与 X Layer 生态建设。用户可通过加入网络（0.1 OKB）、成为节点（1 OKB）、质押 XFIST（最低 10,000 XFIST）及邀请新用户获得 XFIST 奖励，推荐人额外获得 OKB 奖励。灵活的提取机制和透明的减产计划确保公平收益，推动去中心化金融发展。</p>
             <p>如有疑问，请通过 X Layer 社区或 DApp 联系支持团队。让我们在 XFist 生态中掘金未来！</p>
         </div>
     </div>
