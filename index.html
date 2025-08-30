@@ -31,6 +31,7 @@
         label {
             display: block;
             margin-bottom: 5px;
+            font-size: 16px;
         }
         input {
             width: 100%;
@@ -40,6 +41,7 @@
             border: 1px solid #444444;
             color: #ffffff;
             border-radius: 4px;
+            font-size: 14px;
         }
         button {
             background: #333333;
@@ -49,6 +51,7 @@
             border-radius: 4px;
             cursor: pointer;
             margin-right: 5px;
+            font-size: 14px;
         }
         button:hover {
             background: #444444;
@@ -56,6 +59,21 @@
         button.loading {
             opacity: 0.7;
             pointer-events: none;
+            position: relative;
+        }
+        button.loading::after {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-left: 5px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         .percent-buttons {
             margin: 10px 0;
@@ -69,6 +87,7 @@
         }
         .balance {
             margin: 10px 0;
+            font-size: 14px;
         }
         .disabled {
             opacity: 0.5;
@@ -84,6 +103,7 @@
             background: rgba(0, 0, 0, 0.7);
             justify-content: center;
             align-items: center;
+            z-index: 1000;
         }
         .modal-content {
             background: #1a1a1a;
@@ -95,7 +115,7 @@
         }
         .modal-content p {
             margin-bottom: 15px;
-            font-size: 1em;
+            font-size: 16px;
         }
         .modal-content button {
             background: #333333;
@@ -112,6 +132,7 @@
             <div id="walletStatus" class="status">未连接</div>
             <div id="rabbBalance" class="balance">余额：0 RABB</div>
             <div id="pendingRewards" class="balance">待领取奖励：0 OKB</div>
+            <div id="referralInfo" class="balance">推荐信息：无</div>
         </div>
         <div class="section" id="joinSection">
             <label for="referrerInput">推荐人地址：</label>
@@ -257,7 +278,7 @@
                                 params: [xLayer]
                             });
                         } else {
-                            showModal('无法切换网络，请在MetaMask中手动添加X Layer网络。');
+                            showModal('无法切换网络，请在MetaMask中手动切换到X Layer网络（chainId: 196）。');
                             return;
                         }
                     }
@@ -266,11 +287,14 @@
                 contract = new web3.eth.Contract(contractABI, contractAddress);
                 document.getElementById('walletStatus').innerText = `已连接：${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
                 enableInputs(true);
-                updateRabbBalance();
-                updatePendingRewards();
-                updateJoinSection();
-                updateNodeSection();
-                updateMyStakes();
+                await Promise.all([
+                    updateRabbBalance(),
+                    updatePendingRewards(),
+                    updateReferralInfo(),
+                    updateJoinSection(),
+                    updateNodeSection(),
+                    updateMyStakes()
+                ]);
                 showModal('成功连接到X Layer网络！');
             } catch (error) {
                 showModal(`连接失败：${error.message}`);
@@ -297,6 +321,7 @@
                 document.getElementById('rabbBalance').innerText = `余额：${parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)} RABB`;
             } catch (error) {
                 document.getElementById('rabbBalance').innerText = '余额：0 RABB';
+                showModal(`获取RABB余额失败：${error.message}`);
             }
         }
 
@@ -307,6 +332,21 @@
                 document.getElementById('pendingRewards').innerText = `待领取奖励：${parseFloat(web3.utils.fromWei(rewards, 'ether')).toFixed(4)} OKB`;
             } catch (error) {
                 document.getElementById('pendingRewards').innerText = '待领取奖励：0 OKB';
+                showModal(`获取待领取奖励失败：${error.message}`);
+            }
+        }
+
+        async function updateReferralInfo() {
+            if (!web3 || !contract || !accounts) return;
+            try {
+                const referralInfo = await contract.methods.getReferralInfo(accounts[0]).call();
+                const count = referralInfo[0];
+                const reward = parseFloat(web3.utils.fromWei(referralInfo[1], 'ether')).toFixed(4);
+                const referrer = referralInfo[2] === '0x0000000000000000000000000000000000000000' ? '无' : referralInfo[2].slice(0, 6) + '...' + referralInfo[2].slice(-4);
+                document.getElementById('referralInfo').innerText = `推荐信息：推荐人数 ${count}，奖励 ${reward} OKB，推荐人 ${referrer}`;
+            } catch (error) {
+                document.getElementById('referralInfo').innerText = '推荐信息：无';
+                showModal(`获取推荐信息失败：${error.message}`);
             }
         }
 
@@ -314,7 +354,9 @@
             if (!web3 || !contract || !accounts) return;
             try {
                 const result = await contract.methods.getUserStatus(accounts[0]).call();
+                const joined = result[0];
                 const hasPaidOkb = result[1];
+                const nodeStatus = result[2];
                 const joinSection = document.getElementById('joinSection');
                 if (hasPaidOkb) {
                     joinSection.innerHTML = `
@@ -329,8 +371,11 @@
                     `;
                     document.getElementById('joinWithReferrerButton').addEventListener('click', joinWithReferrer);
                 }
+                // 调试信息
+                console.log(`User Status for ${accounts[0]}: joined=${joined}, paidOkb=${hasPaidOkb}, nodeStatus=${nodeStatus}`);
             } catch (error) {
                 showModal(`无法检查加入状态：${error.message}`);
+                console.error('Error in updateJoinSection:', error);
             }
         }
 
@@ -355,6 +400,7 @@
                 }
             } catch (error) {
                 showModal(`无法检查节点状态：${error.message}`);
+                console.error('Error in updateNodeSection:', error);
             }
         }
 
@@ -371,6 +417,7 @@
                 }
             } catch (error) {
                 document.getElementById('myStakes').innerText = '我的质押：无';
+                showModal(`获取质押信息失败：${error.message}`);
             }
         }
 
@@ -393,13 +440,18 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal('成功加入网络！开始挖矿！');
-                updateRabbBalance();
-                updatePendingRewards();
-                updateJoinSection();
-                updateNodeSection();
-                updateMyStakes();
+                await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒确保链上状态更新
+                await Promise.all([
+                    updateRabbBalance(),
+                    updatePendingRewards(),
+                    updateReferralInfo(),
+                    updateJoinSection(),
+                    updateNodeSection(),
+                    updateMyStakes()
+                ]);
             } catch (error) {
-                showModal('加入失败：' + error.message);
+                showModal(`加入失败：${error.message}`);
+                console.error('Error in joinWithReferrer:', error);
             }
         }
 
@@ -417,12 +469,16 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal('成功升级为节点！您已成为挖矿大佬！');
-                updateNodeSection();
-                updateRabbBalance();
-                updatePendingRewards();
-                updateMyStakes();
+                await Promise.all([
+                    updateRabbBalance(),
+                    updatePendingRewards(),
+                    updateReferralInfo(),
+                    updateNodeSection(),
+                    updateMyStakes()
+                ]);
             } catch (error) {
-                showModal('节点升级失败：' + error.message);
+                showModal(`节点升级失败：${error.message}`);
+                console.error('Error in becomeNode:', error);
             }
         }
 
@@ -449,11 +505,15 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal(`成功质押 ${amount} RABB 到节点 ${nodeId}！`);
-                updateRabbBalance();
-                updatePendingRewards();
-                updateMyStakes();
+                await Promise.all([
+                    updateRabbBalance(),
+                    updatePendingRewards(),
+                    updateReferralInfo(),
+                    updateMyStakes()
+                ]);
             } catch (error) {
-                showModal('质押失败：' + error.message);
+                showModal(`质押失败：${error.message}`);
+                console.error('Error in stakeToNode:', error);
             }
         }
 
@@ -470,11 +530,15 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal('质押及奖励已成功提取！');
-                updateRabbBalance();
-                updatePendingRewards();
-                updateMyStakes();
+                await Promise.all([
+                    updateRabbBalance(),
+                    updatePendingRewards(),
+                    updateReferralInfo(),
+                    updateMyStakes()
+                ]);
             } catch (error) {
-                showModal('提取失败：' + error.message);
+                showModal(`提取失败：${error.message}`);
+                console.error('Error in withdrawStake:', error);
             }
         }
 
@@ -504,7 +568,7 @@
 
         window.ethereum?.on('chainChanged', (chainId) => {
             if (parseInt(chainId, 16) !== 196) {
-                showModal('网络错误，请切换回X Layer网络！');
+                showModal('网络错误，请切换回X Layer网络（chainId: 196）！');
                 web3 = null;
                 contract = null;
                 accounts = null;
