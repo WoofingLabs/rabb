@@ -111,6 +111,7 @@
             <button id="connectWallet" class="button">连接钱包</button>
             <div id="walletStatus" class="status">未连接</div>
             <div id="rabbBalance" class="balance">余额：0 RABB</div>
+            <div id="pendingRewards" class="balance">待领取奖励：0 OKB</div>
         </div>
         <div class="section" id="joinSection">
             <label for="referrerInput">推荐人地址：</label>
@@ -135,11 +136,6 @@
             <button id="stakeButton" disabled>质押</button>
             <button id="withdrawStakeButton" disabled>提取质押</button>
             <div id="myStakes" class="status">我的质押：无</div>
-        </div>
-        <div class="section">
-            <label for="burnAmountInput">销毁数量：</label>
-            <input type="number" id="burnAmountInput" placeholder="0" step="1" disabled>
-            <button id="burnButton" disabled>销毁 RABB</button>
         </div>
     </div>
     <div id="modal" class="modal">
@@ -271,6 +267,7 @@
                 document.getElementById('walletStatus').innerText = `已连接：${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
                 enableInputs(true);
                 updateRabbBalance();
+                updatePendingRewards();
                 updateJoinSection();
                 updateNodeSection();
                 updateMyStakes();
@@ -286,12 +283,10 @@
             document.getElementById('referrerInput').disabled = !enabled;
             document.getElementById('nodeIdInput').disabled = !enabled;
             document.getElementById('stakeAmountInput').disabled = !enabled;
-            document.getElementById('burnAmountInput').disabled = !enabled;
             document.getElementById('joinWithReferrerButton').disabled = !enabled;
             document.getElementById('becomeNodeButton').disabled = !enabled;
             document.getElementById('stakeButton').disabled = !enabled;
             document.getElementById('withdrawStakeButton').disabled = !enabled;
-            document.getElementById('burnButton').disabled = !enabled;
             document.querySelectorAll('.percent-buttons button').forEach(btn => btn.disabled = !enabled);
         }
 
@@ -302,6 +297,16 @@
                 document.getElementById('rabbBalance').innerText = `余额：${parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)} RABB`;
             } catch (error) {
                 document.getElementById('rabbBalance').innerText = '余额：0 RABB';
+            }
+        }
+
+        async function updatePendingRewards() {
+            if (!web3 || !contract || !accounts) return;
+            try {
+                const rewards = await contract.methods.pendingOkbRewards(accounts[0]).call();
+                document.getElementById('pendingRewards').innerText = `待领取奖励：${parseFloat(web3.utils.fromWei(rewards, 'ether')).toFixed(4)} OKB`;
+            } catch (error) {
+                document.getElementById('pendingRewards').innerText = '待领取奖励：0 OKB';
             }
         }
 
@@ -389,6 +394,7 @@
                 });
                 showModal('成功加入网络！开始挖矿！');
                 updateRabbBalance();
+                updatePendingRewards();
                 updateJoinSection();
                 updateNodeSection();
                 updateMyStakes();
@@ -413,6 +419,7 @@
                 showModal('成功升级为节点！您已成为挖矿大佬！');
                 updateNodeSection();
                 updateRabbBalance();
+                updatePendingRewards();
                 updateMyStakes();
             } catch (error) {
                 showModal('节点升级失败：' + error.message);
@@ -443,6 +450,7 @@
                 });
                 showModal(`成功质押 ${amount} RABB 到节点 ${nodeId}！`);
                 updateRabbBalance();
+                updatePendingRewards();
                 updateMyStakes();
             } catch (error) {
                 showModal('质押失败：' + error.message);
@@ -463,33 +471,10 @@
                 });
                 showModal('质押及奖励已成功提取！');
                 updateRabbBalance();
+                updatePendingRewards();
                 updateMyStakes();
             } catch (error) {
                 showModal('提取失败：' + error.message);
-            }
-        }
-
-        async function burnRabb() {
-            if (!web3 || !contract || !accounts) {
-                showModal('请先连接钱包！');
-                return;
-            }
-            const amount = document.getElementById("burnAmountInput").value;
-            if (!amount || amount <= 0) {
-                showModal('请输入有效的销毁数量！');
-                return;
-            }
-            try {
-                showModal(`正在销毁 ${amount} RABB...`);
-                const gas = await contract.methods.burn(web3.utils.toWei(amount, "ether")).estimateGas({ from: accounts[0] });
-                await contract.methods.burn(web3.utils.toWei(amount, "ether")).send({ 
-                    from: accounts[0],
-                    gas: Math.floor(gas * 1.2)
-                });
-                showModal(`成功销毁 ${amount} RABB！`);
-                updateRabbBalance();
-            } catch (error) {
-                showModal('销毁失败：' + error.message);
             }
         }
 
@@ -516,7 +501,6 @@
         document.getElementById('connectWallet').addEventListener('click', connectWallet);
         document.getElementById('stakeButton').addEventListener('click', stakeToNode);
         document.getElementById('withdrawStakeButton').addEventListener('click', withdrawStake);
-        document.getElementById('burnButton').addEventListener('click', burnRabb);
 
         window.ethereum?.on('chainChanged', (chainId) => {
             if (parseInt(chainId, 16) !== 196) {
