@@ -345,15 +345,14 @@
         }
 
         async function updatePendingRewards() {
-            if (!web3 || !contract || !accounts) return;
+            if (!web3 || !contract || !accounts) {
+                document.getElementById('pendingRewards').innerText = '待领取奖励：0 RABB';
+                return;
+            }
             try {
-                const stakeInfo = await contract.methods.getStakeInfo(accounts[0]).call();
-                const referralReward = await contract.methods.calculateReferralReward(accounts[0]).call();
-                const stakeReward = parseFloat(web3.utils.fromWei(stakeInfo[3], 'ether')); // 用户质押奖励
-                const nodeReward = parseFloat(web3.utils.fromWei(stakeInfo[4], 'ether')); // 节点奖励（仅节点用户）
-                const referralRewardValue = parseFloat(web3.utils.fromWei(referralReward, 'ether')); // 推荐奖励
-                const totalReward = stakeReward + (accounts[0] === (await contract.methods.nodeAddresses(stakeInfo[1]).call()) ? nodeReward : 0) + referralRewardValue;
-                document.getElementById('pendingRewards').innerText = `待领取奖励：${totalReward.toFixed(2)} RABB`;
+                const referralInfo = await contract.methods.getReferralInfo(accounts[0]).call();
+                const reward = parseFloat(web3.utils.fromWei(referralInfo[1], 'ether')).toFixed(2);
+                document.getElementById('pendingRewards').innerText = `待领取奖励：${reward} RABB`;
             } catch (error) {
                 document.getElementById('pendingRewards').innerText = '待领取奖励：0 RABB';
                 showModal(`获取待领取奖励失败：${error.message}`);
@@ -467,7 +466,7 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal('成功加入网络！开始挖矿！');
-                await new Promise(resolve => setTimeout(resolve, 5000)); // 等待5秒确保链上状态更新
+                await new Promise(resolve => setTimeout(resolve, 5000));
                 await Promise.all([
                     updateRabbBalance(),
                     updatePendingRewards(),
@@ -496,7 +495,7 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal('成功升级为节点！您已成为挖矿大佬！');
-                await new Promise(resolve => setTimeout(resolve, 5000)); // 等待5秒
+                await new Promise(resolve => setTimeout(resolve, 5000));
                 await Promise.all([
                     updateRabbBalance(),
                     updatePendingRewards(),
@@ -533,7 +532,7 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal(`成功质押 ${amount} RABB 到节点 ${nodeId}！`);
-                await new Promise(resolve => setTimeout(resolve, 5000)); // 等待5秒
+                await new Promise(resolve => setTimeout(resolve, 5000));
                 await Promise.all([
                     updateRabbBalance(),
                     updatePendingRewards(),
@@ -559,7 +558,7 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal('质押及奖励已成功提取！');
-                await new Promise(resolve => setTimeout(resolve, 5000)); // 等待5秒
+                await new Promise(resolve => setTimeout(resolve, 5000));
                 await Promise.all([
                     updateRabbBalance(),
                     updatePendingRewards(),
@@ -591,6 +590,9 @@
                 }
             });
         }
+
+        // 定期更新待领取奖励
+        setInterval(updatePendingRewards, 5000);
 
         document.getElementById('connectWallet').addEventListener('click', connectWallet);
         document.getElementById('stakeButton').addEventListener('click', stakeToNode);
