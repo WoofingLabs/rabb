@@ -16,23 +16,23 @@
             max-width: 800px;
             margin: 0 auto;
             background: #1a1a1a;
-            padding: 30px;
+            padding: 20px;
             border-radius: 8px;
         }
         h1 {
             text-align: center;
-            font-size: 28px;
+            font-size: 24px;
             margin-bottom: 20px;
         }
         h2 {
-            font-size: 22px;
+            font-size: 20px;
             margin-top: 20px;
             margin-bottom: 10px;
             border-bottom: 1px solid #444444;
             padding-bottom: 5px;
         }
         p {
-            font-size: 16px;
+            font-size: 14px;
             line-height: 1.6;
             margin-bottom: 15px;
         }
@@ -42,16 +42,48 @@
             margin-bottom: 15px;
         }
         li {
-            font-size: 16px;
+            font-size: 14px;
             line-height: 1.6;
             margin-bottom: 10px;
         }
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .highlight {
             color: #00ff00;
             font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #444444;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #2d2d2d;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            p, li, table, th, td {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 6px;
+            }
         }
     </style>
 </head>
@@ -60,93 +92,181 @@
         <h1>Rabbit DApp 白皮书</h1>
         <div class="section">
             <h2>一、项目概述</h2>
-            <p>Rabbit DApp 是一个基于X Layer网络（chainId: 196）的去中心化应用，旨在通过质押和推荐机制激励用户参与网络建设与生态发展。Rabbit DApp 以其原生代币 <span class="highlight">RABB</span> 为核心，结合节点机制和奖励系统，为用户提供公平、透明的参与机会，共同推动去中心化网络的繁荣。</p>
-            <p>本项目部署在X Layer网络，智能合约地址为 <span class="highlight">0x44B0E9f581B011cd25E48c1486815A12122529aA</span>，所有操作均通过MetaMask钱包与X Layer网络交互。本白皮书详细介绍Rabbit DApp的规则与机制。</p>
+            <p>Rabbit DApp 是一个基于X Layer网络（chainId: 196）的去中心化应用，旨在通过质押和推荐机制激励用户参与网络建设与生态发展。核心代币 <span class="highlight">RABB</span> 结合节点机制和奖励系统，为用户提供公平、透明的参与机会，推动去中心化网络的繁荣。</p>
+            <p>项目部署在X Layer网络，智能合约地址为 <span class="highlight">0x44B0E9f581B011cd25E48c1486815A12122529aA</span>，通过MetaMask钱包与X Layer网络交互。本白皮书详细介绍Rabbit DApp的规则与机制。</p>
         </div>
 
         <div class="section">
             <h2>二、代币机制</h2>
-            <p>Rabbit DApp 的核心代币为 <span class="highlight">RABB</span>，在X Layer网络上运行，遵循ERC-20标准。RABB 主要用于以下场景：</p>
+            <p>Rabbit DApp 的核心代币为 <span class="highlight">RABB</span>，遵循ERC-20标准，总供应量上限为 <span class="highlight">1,000,000,000,000,000 RABB</span>。RABB 主要用途如下：</p>
             <ul>
-                <li><strong>质押</strong>：用户可将RABB质押到节点，参与网络奖励分配。</li>
-                <li><strong>奖励</strong>：质押和推荐行为可获得OKB奖励（X Layer网络的原生货币）。</li>
+                <li><strong>质押</strong>：用户质押RABB到节点，参与OKB奖励分配。</li>
+                <li><strong>奖励</strong>：质押和推荐行为可获得OKB奖励（X Layer原生货币）。</li>
             </ul>
         </div>
 
         <div class="section">
             <h2>三、加入网络</h2>
-            <p>用户需通过支付 <span class="highlight">0.1 OKB</span> 加入Rabbit网络，正式成为网络参与者。加入网络的规则如下：</p>
+            <p>用户需支付 <span class="highlight">0.1 OKB</span> 加入Rabbit网络，成为正式参与者。规则如下：</p>
             <ul>
-                <li><strong>推荐人机制</strong>：用户需提供一个有效的推荐人地址（X Layer网络上的有效地址）。若无推荐人，可由系统指定默认地址。</li>
-                <li><strong>费用</strong>：支付0.1 OKB作为加入费用，用于支持网络运营和奖励分配。</li>
-                <li><strong>状态</strong>：成功加入后，用户可查看自己的推荐信息、质押状态和待领取奖励。</li>
+                <li><strong>推荐人机制</strong>：需提供有效推荐人地址（X Layer有效地址）。若无推荐人，系统指定默认地址。</li>
+                <li><strong>费用</strong>：支付0.1 OKB作为加入费用，支持网络运营和奖励池。</li>
+                <li><strong>状态</strong>：加入后可查看推荐信息、质押状态和待领取奖励。</li>
             </ul>
-            <p>加入网络是参与Rabbit DApp所有功能的前提条件，未加入网络的用户无法进行质押或成为节点。</p>
+            <p>加入网络是参与质押和节点功能的前提，未加入用户无法进一步操作。</p>
         </div>
 
         <div class="section">
             <h2>四、节点机制</h2>
-            <p>用户可通过支付 <span class="highlight">1 OKB</span> 升级为节点，获得更高的奖励权限。节点机制的规则如下：</p>
+            <p>用户可支付 <span class="highlight">1 OKB</span> 升级为节点，获得更高奖励权限。规则如下：</p>
             <ul>
-                <li><strong>费用</strong>：支付1 OKB成为节点，费用用于网络维护和奖励池补充。</li>
-                <li><strong>节点ID</strong>：每个节点分配一个唯一的ID，用于标识和质押操作。</li>
-                <li><strong>权限</strong>：节点可接受其他用户的RABB质押，并获得额外的奖励分成。</li>
-                <li><strong>要求</strong>：用户必须先加入网络（支付0.1 OKB）才能升级为节点。</li>
+                <li><strong>费用</strong>：支付1 OKB成为节点，费用用于网络维护和奖励池。</li>
+                <li><strong>节点ID</strong>：每个节点分配唯一ID，用于质押操作。</li>
+                <li><strong>权限</strong>：节点可接受其他用户RABB质押，获得额外奖励分成。</li>
+                <li><strong>要求</strong>：需先加入网络（支付0.1 OKB）。</li>
             </ul>
-            <p>成为节点是获取更高收益的关键，适合愿意深度参与Rabbit生态的用户。</p>
+            <p>成为节点适合深度参与Rabbit生态的用户，可显著提升收益。</p>
         </div>
 
         <div class="section">
             <h2>五、质押规则</h2>
-            <p>用户可通过质押RABB代币参与网络奖励分配，规则如下：</p>
+            <p>用户通过质押RABB参与奖励分配，规则如下：</p>
             <ul>
-                <li><strong>最低质押量</strong>：每次质押的RABB数量必须为 <span class="highlight">10000 RABB</span> 的整数倍，例如10000、20000等。</li>
-                <li><strong>节点选择</strong>：用户需指定一个有效的节点ID（由已注册的节点提供）进行质押。</li>
-                <li><strong>质押操作</strong>：通过DApp界面输入节点ID和质押数量，或选择余额的25%、50%、75%、100%进行快速质押。</li>
-                <li><strong>提取质押</strong>：用户可随时提取质押的RABB本金及累积的OKB奖励，无锁定期。</li>
+                <li><strong>最低质押量</strong>：每次质押为 <span class="highlight">10000 RABB</span> 的整数倍（如10000、20000等）。</li>
+                <li><strong>节点选择</strong>：需指定有效节点ID（由注册节点提供）。</li>
+                <li><strong>质押操作</strong>：通过DApp输入节点ID和质押数量，或选择余额的25%、50%、75%、100%快速质押。</li>
+                <li><strong>提取质押</strong>：随时提取RABB本金及OKB奖励，无锁定期。</li>
             </ul>
-            <p>质押是Rabbit DApp的核心参与方式，质押越多，奖励越高。用户可通过提取质押随时退出，无需额外费用。</p>
+            <p>质押是核心参与方式，质押越多，奖励越高，提取灵活无额外费用。</p>
         </div>
 
         <div class="section">
             <h2>六、奖励机制</h2>
-            <p>Rabbit DApp 通过OKB奖励激励用户参与，奖励规则如下：</p>
-            <ul>
-                <li><strong>待领取奖励</strong>：用户可通过DApp界面实时查看待领取的OKB奖励，精确到4位小数。</li>
-                <li><strong>质押奖励</strong>：质押RABB的用户根据质押量和网络活跃度获得OKB奖励，具体金额由智能合约动态计算。</li>
-                <li><strong>节点奖励</strong>：节点用户因接受其他用户的质押而获得额外奖励分成，奖励与质押总量相关。</li>
-                <li><strong>领取方式</strong>：奖励在提取质押时自动发放至用户钱包，无需单独操作。</li>
-            </ul>
-            <p>奖励的分配基于链上透明算法，确保公平性。用户可随时通过DApp查看当前待领取奖励。</p>
+            <p>Rabbit DApp 通过OKB和RABB奖励激励用户，具体规则如下：</p>
+            <table>
+                <tr>
+                    <th>奖励类型</th>
+                    <th>规则</th>
+                    <th>具体数字</th>
+                </tr>
+                <tr>
+                    <td>待领取奖励</td>
+                    <td>实时显示待领取OKB，精确到4位小数</td>
+                    <td>例如：<span class="highlight">0.1234 OKB</span></td>
+                </tr>
+                <tr>
+                    <td>质押奖励（RABB）</td>
+                    <td>每10000 RABB每10区块奖励，基于当前每区块奖励基数</td>
+                    <td>初始：<span class="highlight">50 RABB/10区块</span>，最低1 RABB/10区块</td>
+                </tr>
+                <tr>
+                    <td>质押奖励（OKB）</td>
+                    <td>每10000 RABB每10区块奖励，基于当前质押奖励基数</td>
+                    <td>初始：<span class="highlight">0.025 OKB/10区块</span>，最低0.0005 OKB/10区块</td>
+                </tr>
+                <tr>
+                    <td>节点奖励（RABB）</td>
+                    <td>节点获质押奖励的10%分成</td>
+                    <td>例：100000 RABB质押，节点获<span class="highlight">5 RABB/10区块</span>（50 RABB × 10%）</td>
+                </tr>
+                <tr>
+                    <td>推荐奖励（OKB）</td>
+                    <td>推荐人获直接推荐用户加入费用的3%-0.5%（10层递减），每层分别为0.03、0.02、0.01、0.01、0.005、0.005、0.005、0.005、0.005、0.005 OKB</td>
+                    <td>例：1人加入，推荐人获<span class="highlight">0.03 OKB</span>（第1层），第2层获<span class="highlight">0.02 OKB</span></td>
+                </tr>
+                <tr>
+                    <td>推荐奖励（RABB）</td>
+                    <td>推荐人每10区块获基础奖励+10%推荐加成/推荐人数</td>
+                    <td>例：1推荐人，初始获<span class="highlight">55 RABB/10区块</span>（50 RABB + 10% × 1）</td>
+                </tr>
+                <tr>
+                    <td>领取方式</td>
+                    <td>质押和节点奖励在提取质押时自动发放，推荐奖励在下级加入时发放</td>
+                    <td>无需单独操作</td>
+                </tr>
+            </table>
+            <p>奖励由智能合约透明计算，基于`rabbPerBlock`和`getCurrentStakeReward`动态调整，用户可随时查看待领取奖励。</p>
         </div>
 
         <div class="section">
-            <h2>七、推荐系统</h2>
-            <p>Rabbit DApp 鼓励用户通过推荐机制邀请新用户加入，规则如下：</p>
-            <ul>
-                <li><strong>推荐奖励</strong>：推荐人可获得新用户加入和质押活动产生的OKB奖励分成，具体金额由智能合约计算。</li>
-                <li><strong>推荐信息</strong>：用户可查看自己的推荐人数、推荐奖励和推荐人地址（若有）。</li>
-                <li><strong>层级限制</strong>：推荐奖励支持最多10层推荐路径，确保奖励分配公平且可控。</li>
-            </ul>
-            <p>推荐系统旨在激励社区增长，用户通过分享可获得持续的被动收益。</p>
+            <h2>七、减产机制</h2>
+            <p>Rabbit DApp 采用减产机制控制RABB和OKB奖励产出，规则如下：</p>
+            <table>
+                <tr>
+                    <th>项目</th>
+                    <th>规则</th>
+                    <th>具体数字</th>
+                </tr>
+                <tr>
+                    <td>初始奖励</td>
+                    <td>每10区块的RABB和OKB奖励基数</td>
+                    <td>RABB：<span class="highlight">50 RABB/10区块</span><br>OKB：<span class="highlight">0.025 OKB/10区块</span>（每10000 RABB）</td>
+                </tr>
+                <tr>
+                    <td>最低奖励</td>
+                    <td>奖励基数的最低值</td>
+                    <td>RABB：<span class="highlight">1 RABB/10区块</span><br>OKB：<span class="highlight">0.0005 OKB/10区块</span>（每10000 RABB）</td>
+                </tr>
+                <tr>
+                    <td>减产周期</td>
+                    <td>每6000000区块（约4.17年，假设15秒/区块）减产一次</td>
+                    <td>约<span class="highlight">6000000区块</span></td>
+                </tr>
+                <tr>
+                    <td>减产幅度</td>
+                    <td>每周期奖励基数减少，基于公式：base = 50 - (effectiveBlocks / 6000000)</td>
+                    <td>每周期减少约<span class="highlight">2%（1/50）</span></td>
+                </tr>
+                <tr>
+                    <td>减产计划</td>
+                    <td>示例减产阶段（每6000000区块）：
+                        <ul>
+                            <li>第1周期（0-6M区块）：50 RABB，0.025 OKB</li>
+                            <li>第2周期（6M-12M区块）：49 RABB，0.0245 OKB</li>
+                            <li>第3周期（12M-18M区块）：48 RABB，0.024 OKB</li>
+                            <li>…</li>
+                            <li>第50周期（294M区块后）：1 RABB，0.0005 OKB</li>
+                        </ul>
+                    </td>
+                    <td>最大<span class="highlight">49次</span>减产</td>
+                </tr>
+                <tr>
+                    <td>查询方式</td>
+                    <td>通过DApp或区块浏览器查看减产进度</td>
+                    <td>调用<span class="highlight">getReductionProgress</span></td>
+                </tr>
+            </table>
+            <p>减产机制确保RABB和OKB奖励的可持续性，激励早期参与者，维持生态长期稳定。</p>
         </div>
 
         <div class="section">
-            <h2>八、注意事项</h2>
-            <p>为确保顺利参与Rabbit DApp，请注意以下事项：</p>
+            <h2>八、推荐系统</h2>
+            <p>推荐机制激励用户邀请新用户，规则如下：</p>
             <ul>
-                <li><strong>钱包要求</strong>：需使用MetaMask钱包，连接到X Layer网络（chainId: 196，RPC: https://rpc.xlayer.tech）。</li>
-                <li><strong>费用准备</strong>：加入网络需0.1 OKB，成为节点需1 OKB，确保钱包有足够OKB支付费用和gas费。</li>
-                <li><strong>网络环境</strong>：建议通过本地服务器运行DApp（例如：npx serve），以确保MetaMask正常交互。</li>
-                <li><strong>状态检查</strong>：加入网络、成为节点或质押后，状态可能因网络延迟稍有延迟，建议等待数秒后刷新页面。</li>
-                <li><strong>合约透明</strong>：所有操作通过智能合约执行，数据可通过X Layer区块浏览器（https://www.okx.com/web3/explorer/xlayer）验证。</li>
+                <li><strong>推荐奖励（OKB）</strong>：推荐人获新用户加入费用（0.1 OKB）的3%-0.5%（10层递减），每层分别为0.03、0.02、0.01、0.01、0.005、0.005、0.005、0.005、0.005、0.005 OKB。</li>
+                <li><strong>推荐奖励（RABB）</strong>：推荐人每10区块获基础奖励（初始50 RABB）+10%推荐加成/推荐人数。</li>
+                <li><strong>推荐信息</strong>：显示推荐人数、奖励和推荐人地址（若无显示“无”）。</li>
+                <li><strong>层级限制</strong>：最多10层推荐路径，确保公平分配。</li>
+            </ul>
+            <p>推荐系统通过被动收益激励社区增长。</p>
+        </div>
+
+        <div class="section">
+            <h2>九、注意事项</h2>
+            <p>为顺利参与Rabbit DApp，请注意：</p>
+            <ul>
+                <li><strong>钱包要求</strong>：需MetaMask钱包，连接X Layer网络（chainId: 196，RPC: https://rpc.xlayer.tech）。</li>
+                <li><strong>费用准备</strong>：加入网络需0.1 OKB，节点需1 OKB，gas费约0.001-0.005 OKB/交易。</li>
+                <li><strong>网络环境</strong>：通过本地服务器运行DApp（例如：npx serve）。</li>
+                <li><strong>状态检查</strong>：操作后状态可能因网络延迟稍迟，建议等待数秒刷新。</li>
+                <li><strong>合约透明</strong>：数据可通过X Layer区块浏览器（https://www.okx.com/web3/explorer/xlayer）验证。</li>
             </ul>
         </div>
 
         <div class="section">
-            <h2>九、总结</h2>
-            <p>Rabbit DApp 是一个简单、高效、透明的去中心化应用，通过质押和推荐机制激励用户参与X Layer网络生态建设。用户可通过加入网络、成为节点、质押RABB和邀请新用户获得OKB奖励，同时享受灵活的质押提取机制。Rabbit DApp 致力于为用户提供公平的收益机会，推动去中心化金融的普及与发展。</p>
-            <p>如有疑问，请通过RABB社区或DApp界面联系支持团队。让我们一起在Rabbit生态中掘金未来！</p>
+            <h2>十、总结</h2>
+            <p>Rabbit DApp 通过质押和推荐机制激励用户参与X Layer生态建设。用户可通过加入网络（0.1 OKB）、成为节点（1 OKB）、质押RABB（最低10000 RABB）及邀请新用户获得RABB和OKB奖励，享受灵活提取和透明的减产机制。Rabbit DApp 致力于提供公平收益机会，推动去中心化金融发展。</p>
+            <p>如有疑问，请通过X Layer社区或DApp联系支持团队。让我们在Rabbit生态中掘金未来！</p>
         </div>
     </div>
 </body>
