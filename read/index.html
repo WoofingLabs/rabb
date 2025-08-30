@@ -102,8 +102,8 @@
             <p>Rabbit DApp 的核心代币为 <span class="highlight">RABB</span>，遵循ERC-20标准，总供应量上限为 <span class="highlight">1,000,000,000,000,000 RABB</span>。主要用途如下：</p>
             <ul>
                 <li><strong>质押</strong>：用户质押RABB到节点，参与RABB奖励分配。</li>
-                <li><strong>奖励</strong>：质押、节点和推荐行为可获得RABB奖励，推荐人额外获得OKB奖励。</li>
-                <li><strong>费用</strong>：加入网络和成为节点需支付OKB（X Layer主网币）。</li>
+                <li><strong>奖励</strong>：质押、节点和推荐行为获得RABB奖励，推荐人额外获得OKB奖励（X Layer主网币）。</li>
+                <li><strong>费用</strong>：加入网络和成为节点需支付OKB。</li>
             </ul>
         </div>
 
@@ -124,7 +124,7 @@
             <ul>
                 <li><strong>费用</strong>：支付1 OKB，进入奖励池并支持网络维护。</li>
                 <li><strong>节点ID</strong>：分配唯一ID，用于接受质押和奖励分配。</li>
-                <li><strong>权限</strong>：节点可接受其他用户RABB质押，获得10%奖励分成。</li>
+                <li><strong>权限</strong>：节点可接受其他用户RABB质押，获得10%奖励分成（RABB）。</li>
                 <li><strong>要求</strong>：需先加入网络（支付0.1 OKB）。</li>
             </ul>
             <p>成为节点适合深度参与Rabbit生态的用户，可显著提升收益。</p>
@@ -153,8 +153,8 @@
                 </tr>
                 <tr>
                     <td>待领取奖励</td>
-                    <td>实时显示待领取RABB奖励，精确到2位小数</td>
-                    <td>例如：<span class="highlight">50.00 RABB</span></td>
+                    <td>实时显示累积RABB奖励（质押+推荐），精确到2位小数</td>
+                    <td>例如：<span class="highlight">123.45 RABB</span></td>
                 </tr>
                 <tr>
                     <td>质押奖励（RABB）</td>
@@ -182,7 +182,7 @@
                     <td>无需单独操作</td>
                 </tr>
             </table>
-            <p>奖励由智能合约透明计算，基于`rabbPerBlock`和`getCurrentStakeReward`动态调整，用户可通过DApp查看待领取RABB奖励。</p>
+            <p>奖励由智能合约透明计算，基于`rabbPerBlock`和`getCurrentStakeReward`动态调整，用户可通过DApp查看累积RABB奖励。</p>
         </div>
 
         <div class="section">
@@ -206,7 +206,7 @@
                 </tr>
                 <tr>
                     <td>减产周期</td>
-                    <td>每6000000区块（约4.17年，假设15秒/区块）减产一次</td>
+                    <td>每6000000区块（约27.78天，0.4秒/区块）减产一次</td>
                     <td><span class="highlight">6000000区块</span></td>
                 </tr>
                 <tr>
