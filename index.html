@@ -122,6 +122,23 @@
             padding: 8px 15px;
             border-radius: 4px;
         }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            label, .status, .balance {
+                font-size: 14px;
+            }
+            input, button {
+                font-size: 12px;
+            }
+            .modal-content p {
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -131,7 +148,7 @@
             <button id="connectWallet" class="button">连接钱包</button>
             <div id="walletStatus" class="status">未连接</div>
             <div id="rabbBalance" class="balance">余额：0 RABB</div>
-            <div id="pendingRewards" class="balance">待领取奖励：0 OKB</div>
+            <div id="pendingRewards" class="balance">待领取奖励：0 RABB</div>
             <div id="referralInfo" class="balance">推荐信息：无</div>
         </div>
         <div class="section" id="joinSection">
@@ -298,6 +315,7 @@
                 showModal('成功连接到X Layer网络！');
             } catch (error) {
                 showModal(`连接失败：${error.message}`);
+                console.error('Error in connectWallet:', error);
             } finally {
                 connectButton.classList.remove('loading');
             }
@@ -322,17 +340,20 @@
             } catch (error) {
                 document.getElementById('rabbBalance').innerText = '余额：0 RABB';
                 showModal(`获取RABB余额失败：${error.message}`);
+                console.error('Error in updateRabbBalance:', error);
             }
         }
 
         async function updatePendingRewards() {
             if (!web3 || !contract || !accounts) return;
             try {
-                const rewards = await contract.methods.pendingOkbRewards(accounts[0]).call();
-                document.getElementById('pendingRewards').innerText = `待领取奖励：${parseFloat(web3.utils.fromWei(rewards, 'ether')).toFixed(4)} OKB`;
+                const rewardInfo = await contract.methods.getRewardInfo(accounts[0]).call();
+                const perBlockReward = parseFloat(web3.utils.fromWei(rewardInfo[0], 'ether')).toFixed(2);
+                document.getElementById('pendingRewards').innerText = `待领取奖励：${perBlockReward} RABB`;
             } catch (error) {
-                document.getElementById('pendingRewards').innerText = '待领取奖励：0 OKB';
+                document.getElementById('pendingRewards').innerText = '待领取奖励：0 RABB';
                 showModal(`获取待领取奖励失败：${error.message}`);
+                console.error('Error in updatePendingRewards:', error);
             }
         }
 
@@ -341,12 +362,12 @@
             try {
                 const referralInfo = await contract.methods.getReferralInfo(accounts[0]).call();
                 const count = referralInfo[0];
-                const reward = parseFloat(web3.utils.fromWei(referralInfo[1], 'ether')).toFixed(4);
                 const referrer = referralInfo[2] === '0x0000000000000000000000000000000000000000' ? '无' : referralInfo[2].slice(0, 6) + '...' + referralInfo[2].slice(-4);
-                document.getElementById('referralInfo').innerText = `推荐信息：推荐人数 ${count}，奖励 ${reward} OKB，推荐人 ${referrer}`;
+                document.getElementById('referralInfo').innerText = `推荐信息：推荐人数 ${count}，推荐人 ${referrer}`;
             } catch (error) {
                 document.getElementById('referralInfo').innerText = '推荐信息：无';
                 showModal(`获取推荐信息失败：${error.message}`);
+                console.error('Error in updateReferralInfo:', error);
             }
         }
 
@@ -371,7 +392,6 @@
                     `;
                     document.getElementById('joinWithReferrerButton').addEventListener('click', joinWithReferrer);
                 }
-                // 调试信息
                 console.log(`User Status for ${accounts[0]}: joined=${joined}, paidOkb=${hasPaidOkb}, nodeStatus=${nodeStatus}`);
             } catch (error) {
                 showModal(`无法检查加入状态：${error.message}`);
@@ -410,14 +430,17 @@
                 const stakeInfo = await contract.methods.getStakeInfo(accounts[0]).call();
                 const amount = web3.utils.fromWei(stakeInfo[0], 'ether');
                 const nodeId = stakeInfo[1];
+                const stakeReward = parseFloat(web3.utils.fromWei(stakeInfo[3], 'ether')).toFixed(2);
+                const nodeReward = parseFloat(web3.utils.fromWei(stakeInfo[4], 'ether')).toFixed(2);
                 if (parseInt(amount) > 0) {
-                    document.getElementById('myStakes').innerText = `我的质押：节点 ${nodeId}：${parseFloat(amount).toFixed(2)} RABB`;
+                    document.getElementById('myStakes').innerText = `我的质押：节点 ${nodeId}：${parseFloat(amount).toFixed(2)} RABB，质押奖励：${stakeReward} RABB，节点奖励：${nodeReward} RABB`;
                 } else {
                     document.getElementById('myStakes').innerText = '我的质押：无';
                 }
             } catch (error) {
                 document.getElementById('myStakes').innerText = '我的质押：无';
                 showModal(`获取质押信息失败：${error.message}`);
+                console.error('Error in updateMyStakes:', error);
             }
         }
 
@@ -440,7 +463,7 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal('成功加入网络！开始挖矿！');
-                await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒确保链上状态更新
+                await new Promise(resolve => setTimeout(resolve, 5000)); // 等待5秒确保链上状态更新
                 await Promise.all([
                     updateRabbBalance(),
                     updatePendingRewards(),
@@ -469,6 +492,7 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal('成功升级为节点！您已成为挖矿大佬！');
+                await new Promise(resolve => setTimeout(resolve, 5000)); // 等待5秒
                 await Promise.all([
                     updateRabbBalance(),
                     updatePendingRewards(),
@@ -505,6 +529,7 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal(`成功质押 ${amount} RABB 到节点 ${nodeId}！`);
+                await new Promise(resolve => setTimeout(resolve, 5000)); // 等待5秒
                 await Promise.all([
                     updateRabbBalance(),
                     updatePendingRewards(),
@@ -530,6 +555,7 @@
                     gas: Math.floor(gas * 1.2)
                 });
                 showModal('质押及奖励已成功提取！');
+                await new Promise(resolve => setTimeout(resolve, 5000)); // 等待5秒
                 await Promise.all([
                     updateRabbBalance(),
                     updatePendingRewards(),
