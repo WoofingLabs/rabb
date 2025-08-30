@@ -347,9 +347,13 @@
         async function updatePendingRewards() {
             if (!web3 || !contract || !accounts) return;
             try {
-                const rewardInfo = await contract.methods.getRewardInfo(accounts[0]).call();
-                const perBlockReward = parseFloat(web3.utils.fromWei(rewardInfo[0], 'ether')).toFixed(2);
-                document.getElementById('pendingRewards').innerText = `待领取奖励：${perBlockReward} RABB`;
+                const stakeInfo = await contract.methods.getStakeInfo(accounts[0]).call();
+                const referralReward = await contract.methods.calculateReferralReward(accounts[0]).call();
+                const stakeReward = parseFloat(web3.utils.fromWei(stakeInfo[3], 'ether')); // 用户质押奖励
+                const nodeReward = parseFloat(web3.utils.fromWei(stakeInfo[4], 'ether')); // 节点奖励（仅节点用户）
+                const referralRewardValue = parseFloat(web3.utils.fromWei(referralReward, 'ether')); // 推荐奖励
+                const totalReward = stakeReward + (accounts[0] === (await contract.methods.nodeAddresses(stakeInfo[1]).call()) ? nodeReward : 0) + referralRewardValue;
+                document.getElementById('pendingRewards').innerText = `待领取奖励：${totalReward.toFixed(2)} RABB`;
             } catch (error) {
                 document.getElementById('pendingRewards').innerText = '待领取奖励：0 RABB';
                 showModal(`获取待领取奖励失败：${error.message}`);
