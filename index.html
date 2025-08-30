@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rabbit DApp</title>
+    <link rel="icon" href="https://woofingjace.com/images/jace.png" type="image/x-icon">
+    <style>
+        body {
+            background: #000000;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            background: #2d2d2d;
+            border: 1px solid #444444;
+            color: #ffffff;
+            border-radius: 4px;
+        }
+        button {
+            background: #333333;
+            color: #ffffff;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        button:hover {
+            background: #444444;
+        }
+        button.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .percent-buttons {
+            margin: 10px 0;
+        }
+        .percent-buttons button {
+            margin-right: 5px;
+        }
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .balance {
+            margin: 10px 0;
+        }
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            color: #ffffff;
+            max-width: 300px;
+        }
+        .modal-content p {
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+        .modal-content button {
+            background: #333333;
+            padding: 8px 15px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Rabbit DApp</h1>
+        <div class="section">
+            <button id="connectWallet" class="button">连接钱包</button>
+            <div id="walletStatus" class="status">未连接</div>
+            <div id="rabbBalance" class="balance">余额：0 RABB</div>
+        </div>
+        <div class="section" id="joinSection">
+            <label for="referrerInput">推荐人地址：</label>
+            <input type="text" id="referrerInput" placeholder="例如：0x..." disabled>
+            <button id="joinWithReferrerButton" disabled>加入网络 (0.1 OKB)</button>
+        </div>
+        <div class="section" id="nodeSection">
+            <button id="becomeNodeButton" disabled>成为节点 (1 OKB)</button>
+            <div id="nodeStatus" class="status"></div>
+        </div>
+        <div class="section">
+            <label for="nodeIdInput">节点ID：</label>
+            <input type="text" id="nodeIdInput" placeholder="节点ID" disabled>
+            <label for="stakeAmountInput">质押数量（最少10000 RABB）：</label>
+            <input type="number" id="stakeAmountInput" placeholder="0" step="10000" disabled>
+            <div class="percent-buttons">
+                <button onclick="setStakePercentage(25)" disabled>25%</button>
+                <button onclick="setStakePercentage(50)" disabled>50%</button>
+                <button onclick="setStakePercentage(75)" disabled>75%</button>
+                <button onclick="setStakePercentage(100)" disabled>100%</button>
+            </div>
+            <button id="stakeButton" disabled>质押</button>
+            <button id="withdrawStakeButton" disabled>提取质押</button>
+            <div id="myStakes" class="status">我的质押：无</div>
+        </div>
+        <div class="section">
+            <label for="burnAmountInput">销毁数量：</label>
+            <input type="number" id="burnAmountInput" placeholder="0" step="1" disabled>
+            <button id="burnButton" disabled>销毁 RABB</button>
+        </div>
+    </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="closeModal()">确定</button>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
+    <script>
+        let web3, accounts, contract;
+        const contractAddress = "0x44B0E9f581B011cd25E48c1486815A12122529aA";
+        const contractABI = [
+            {"inputs":[],"stateMutability":"payable","type":"constructor"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"OkbRewardPending","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"OkbRewardsLocked","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"OkbWithdrawn","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"OkbCollectedUpdated","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RabbBurned","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newValue","type":"uint256"}],"name":"RabbPerBlockUpdated","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"node","type":"address"}],"name":"NodeAdded","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"referrer","type":"address"}],"name":"ReferralAdded","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"totalAmount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"nodeAmount","type":"uint256"}],"name":"RewardsClaimed","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"nodeId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Staked","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"nodeId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"StakeWithdrawn","type":"event"},
+            {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},
+            {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"becomeNode","outputs":[],"stateMutability":"payable","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getContractStats","outputs":[{"internalType":"uint256","name":"okbBalance","type":"uint256"},{"internalType":"uint256","name":"rabbTotalSupply","type":"uint256"},{"internalType":"uint256","name":"blockReward","type":"uint256"},{"internalType":"uint256","name":"contractRabb","type":"uint256"},{"internalType":"bool","name":"miningEndedStatus","type":"bool"},{"internalType":"uint256","name":"nodesCount","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"nodeId","type":"uint256"}],"name":"getNodeStakes","outputs":[{"internalType":"uint256","name":"stakesTotal","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"getReductionProgress","outputs":[{"internalType":"uint256","name":"reductionsDone","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getReferralInfo","outputs":[{"internalType":"uint256","name":"count","type":"uint256"},{"internalType":"uint256","name":"reward","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address[10]","name":"path","type":"address[10]"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getRewardInfo","outputs":[{"internalType":"uint256","name":"perBlock","type":"uint256"},{"internalType":"uint256","name":"pendingOkb","type":"uint256"},{"internalType":"uint256","name":"totalOkb","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getStakeInfo","outputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"nodeId","type":"uint256"},{"internalType":"uint256","name":"lastBlock","type":"uint256"},{"internalType":"uint256","name":"stakeReward","type":"uint256"},{"internalType":"uint256","name":"nodeReward","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserStatus","outputs":[{"internalType":"bool","name":"joined","type":"bool"},{"internalType":"bool","name":"paidOkb","type":"bool"},{"internalType":"bool","name":"nodeStatus","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserNodeId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"isNode","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"referrer","type":"address"},{"internalType":"address","name":"user","type":"address"}],"name":"isReferral","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"isUserNode","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"_referrer","type":"address"}],"name":"joinWithReferrer","outputs":[],"stateMutability":"payable","type":"function"},
+            {"inputs":[],"name":"lastUpdateBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"lastWithdrawalBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"miningEnded","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"nodeCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"nodeAddresses","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"nodeTotalStakes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"okbCollected","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingOkbRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"rabbPerBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"referralCounts","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"referralPath","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"referrers","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"uint256","name":"nodeId","type":"uint256"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"stakeToNode","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"startBlock","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"stakedAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalMinedAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalMinedBlocks","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalNodeRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalStaked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"userInfo","outputs":[{"internalType":"uint256","name":"principal","type":"uint256"},{"internalType":"uint256","name":"lastRewardBlock","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"userNodeStake","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"withdrawAllOkb","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"withdrawOkbWithReserve","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"withdrawStake","outputs":[],"stateMutability":"nonpayable","type":"function"}
+        ];
+
+        const xLayer = {
+            chainId: 196,
+            chainName: 'X Layer',
+            nativeCurrency: { name: 'OKB', symbol: 'OKB', decimals: 18 },
+            rpcUrls: ['https://rpc.xlayer.tech'],
+            blockExplorerUrls: ['https://www.okx.com/web3/explorer/xlayer']
+        };
+
+        function showModal(message) {
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        async function connectWallet() {
+            const connectButton = document.getElementById('connectWallet');
+            if (!window.ethereum) {
+                showModal('请安装MetaMask钱包！');
+                return;
+            }
+            try {
+                connectButton.classList.add('loading');
+                web3 = new Web3(window.ethereum);
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const chainId = await web3.eth.getChainId();
+                if (chainId !== 196) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: web3.utils.numberToHex(196) }]
+                        });
+                    } catch (switchError) {
+                        if (switchError.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [xLayer]
+                            });
+                        } else {
+                            showModal('无法切换网络，请在MetaMask中手动添加X Layer网络。');
+                            return;
+                        }
+                    }
+                }
+                accounts = await web3.eth.getAccounts();
+                contract = new web3.eth.Contract(contractABI, contractAddress);
+                document.getElementById('walletStatus').innerText = `已连接：${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`;
+                enableInputs(true);
+                updateRabbBalance();
+                updateJoinSection();
+                updateNodeSection();
+                updateMyStakes();
+                showModal('成功连接到X Layer网络！');
+            } catch (error) {
+                showModal(`连接失败：${error.message}`);
+            } finally {
+                connectButton.classList.remove('loading');
+            }
+        }
+
+        function enableInputs(enabled) {
+            document.getElementById('referrerInput').disabled = !enabled;
+            document.getElementById('nodeIdInput').disabled = !enabled;
+            document.getElementById('stakeAmountInput').disabled = !enabled;
+            document.getElementById('burnAmountInput').disabled = !enabled;
+            document.getElementById('joinWithReferrerButton').disabled = !enabled;
+            document.getElementById('becomeNodeButton').disabled = !enabled;
+            document.getElementById('stakeButton').disabled = !enabled;
+            document.getElementById('withdrawStakeButton').disabled = !enabled;
+            document.getElementById('burnButton').disabled = !enabled;
+            document.querySelectorAll('.percent-buttons button').forEach(btn => btn.disabled = !enabled);
+        }
+
+        async function updateRabbBalance() {
+            if (!web3 || !contract || !accounts) return;
+            try {
+                const balance = await contract.methods.balanceOf(accounts[0]).call();
+                document.getElementById('rabbBalance').innerText = `余额：${parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)} RABB`;
+            } catch (error) {
+                document.getElementById('rabbBalance').innerText = '余额：0 RABB';
+            }
+        }
+
+        async function updateJoinSection() {
+            if (!web3 || !contract || !accounts) return;
+            try {
+                const result = await contract.methods.getUserStatus(accounts[0]).call();
+                const hasPaidOkb = result[1];
+                const joinSection = document.getElementById('joinSection');
+                if (hasPaidOkb) {
+                    joinSection.innerHTML = `
+                        <label>加入网络</label>
+                        <div class="status">您已加入网络。</div>
+                    `;
+                } else {
+                    joinSection.innerHTML = `
+                        <label for="referrerInput">推荐人地址：</label>
+                        <input type="text" id="referrerInput" placeholder="例如：0x...">
+                        <button id="joinWithReferrerButton">加入网络 (0.1 OKB)</button>
+                    `;
+                    document.getElementById('joinWithReferrerButton').addEventListener('click', joinWithReferrer);
+                }
+            } catch (error) {
+                showModal(`无法检查加入状态：${error.message}`);
+            }
+        }
+
+        async function updateNodeSection() {
+            if (!web3 || !contract || !accounts) return;
+            try {
+                const result = await contract.methods.getUserStatus(accounts[0]).call();
+                const isNode = result[2];
+                const nodeSection = document.getElementById('nodeSection');
+                if (isNode) {
+                    const nodeId = await contract.methods.getUserNodeId(accounts[0]).call();
+                    nodeSection.innerHTML = `
+                        <label>成为节点</label>
+                        <div class="status">您已是节点！您的节点ID：${nodeId}</div>
+                    `;
+                } else {
+                    nodeSection.innerHTML = `
+                        <button id="becomeNodeButton">成为节点 (1 OKB)</button>
+                        <div id="nodeStatus" class="status">您尚未成为节点！</div>
+                    `;
+                    document.getElementById('becomeNodeButton').addEventListener('click', becomeNode);
+                }
+            } catch (error) {
+                showModal(`无法检查节点状态：${error.message}`);
+            }
+        }
+
+        async function updateMyStakes() {
+            if (!web3 || !contract || !accounts) return;
+            try {
+                const stakeInfo = await contract.methods.getStakeInfo(accounts[0]).call();
+                const amount = web3.utils.fromWei(stakeInfo[0], 'ether');
+                const nodeId = stakeInfo[1];
+                if (parseInt(amount) > 0) {
+                    document.getElementById('myStakes').innerText = `我的质押：节点 ${nodeId}：${parseFloat(amount).toFixed(2)} RABB`;
+                } else {
+                    document.getElementById('myStakes').innerText = '我的质押：无';
+                }
+            } catch (error) {
+                document.getElementById('myStakes').innerText = '我的质押：无';
+            }
+        }
+
+        async function joinWithReferrer() {
+            if (!web3 || !contract || !accounts) {
+                showModal('请先连接钱包！');
+                return;
+            }
+            const referrer = document.getElementById("referrerInput").value;
+            if (!referrer || !web3.utils.isAddress(referrer)) {
+                showModal('请输入有效的推荐人地址！');
+                return;
+            }
+            try {
+                showModal('正在以0.1 OKB加入网络...');
+                const gas = await contract.methods.joinWithReferrer(referrer).estimateGas({ from: accounts[0], value: web3.utils.toWei("0.1", "ether") });
+                await contract.methods.joinWithReferrer(referrer).send({ 
+                    from: accounts[0], 
+                    value: web3.utils.toWei("0.1", "ether"),
+                    gas: Math.floor(gas * 1.2)
+                });
+                showModal('成功加入网络！开始挖矿！');
+                updateRabbBalance();
+                updateJoinSection();
+                updateNodeSection();
+                updateMyStakes();
+            } catch (error) {
+                showModal('加入失败：' + error.message);
+            }
+        }
+
+        async function becomeNode() {
+            if (!web3 || !contract || !accounts) {
+                showModal('请先连接钱包！');
+                return;
+            }
+            try {
+                showModal('正在以1 OKB升级为节点...');
+                const gas = await contract.methods.becomeNode().estimateGas({ from: accounts[0], value: web3.utils.toWei("1", "ether") });
+                await contract.methods.becomeNode().send({ 
+                    from: accounts[0], 
+                    value: web3.utils.toWei("1", "ether"),
+                    gas: Math.floor(gas * 1.2)
+                });
+                showModal('成功升级为节点！您已成为挖矿大佬！');
+                updateNodeSection();
+                updateRabbBalance();
+                updateMyStakes();
+            } catch (error) {
+                showModal('节点升级失败：' + error.message);
+            }
+        }
+
+        async function stakeToNode() {
+            if (!web3 || !contract || !accounts) {
+                showModal('请先连接钱包！');
+                return;
+            }
+            const nodeId = document.getElementById("nodeIdInput").value;
+            const amount = document.getElementById("stakeAmountInput").value;
+            if (!nodeId || isNaN(nodeId) || nodeId <= 0) {
+                showModal('请输入有效的节点ID！');
+                return;
+            }
+            if (!amount || amount < 10000 || amount % 10000 !== 0) {
+                showModal('请输入有效的质押数量（必须为10000 RABB的倍数）！');
+                return;
+            }
+            try {
+                showModal(`正在质押 ${amount} RABB 到节点 ${nodeId}...`);
+                const gas = await contract.methods.stakeToNode(nodeId, web3.utils.toWei(amount, "ether")).estimateGas({ from: accounts[0] });
+                await contract.methods.stakeToNode(nodeId, web3.utils.toWei(amount, "ether")).send({ 
+                    from: accounts[0],
+                    gas: Math.floor(gas * 1.2)
+                });
+                showModal(`成功质押 ${amount} RABB 到节点 ${nodeId}！`);
+                updateRabbBalance();
+                updateMyStakes();
+            } catch (error) {
+                showModal('质押失败：' + error.message);
+            }
+        }
+
+        async function withdrawStake() {
+            if (!web3 || !contract || !accounts) {
+                showModal('请先连接钱包！');
+                return;
+            }
+            try {
+                showModal('正在提取质押...');
+                const gas = await contract.methods.withdrawStake().estimateGas({ from: accounts[0] });
+                await contract.methods.withdrawStake().send({ 
+                    from: accounts[0],
+                    gas: Math.floor(gas * 1.2)
+                });
+                showModal('质押及奖励已成功提取！');
+                updateRabbBalance();
+                updateMyStakes();
+            } catch (error) {
+                showModal('提取失败：' + error.message);
+            }
+        }
+
+        async function burnRabb() {
+            if (!web3 || !contract || !accounts) {
+                showModal('请先连接钱包！');
+                return;
+            }
+            const amount = document.getElementById("burnAmountInput").value;
+            if (!amount || amount <= 0) {
+                showModal('请输入有效的销毁数量！');
+                return;
+            }
+            try {
+                showModal(`正在销毁 ${amount} RABB...`);
+                const gas = await contract.methods.burn(web3.utils.toWei(amount, "ether")).estimateGas({ from: accounts[0] });
+                await contract.methods.burn(web3.utils.toWei(amount, "ether")).send({ 
+                    from: accounts[0],
+                    gas: Math.floor(gas * 1.2)
+                });
+                showModal(`成功销毁 ${amount} RABB！`);
+                updateRabbBalance();
+            } catch (error) {
+                showModal('销毁失败：' + error.message);
+            }
+        }
+
+        function setStakePercentage(percentage) {
+            if (!web3 || !contract || !accounts) {
+                showModal('请先连接钱包！');
+                return;
+            }
+            updateRabbBalance().then(() => {
+                const balanceText = document.getElementById('rabbBalance').innerText.split('：')[1].split(' ')[0];
+                const balance = parseFloat(balanceText);
+                const minUnit = 10000;
+                const maxUnits = Math.floor(balance / minUnit);
+                if (maxUnits < 1) {
+                    document.getElementById('stakeAmountInput').value = 0;
+                    showModal('余额不足，无法质押！');
+                } else {
+                    const units = Math.floor(maxUnits * percentage / 100);
+                    document.getElementById('stakeAmountInput').value = units * minUnit;
+                }
+            });
+        }
+
+        document.getElementById('connectWallet').addEventListener('click', connectWallet);
+        document.getElementById('stakeButton').addEventListener('click', stakeToNode);
+        document.getElementById('withdrawStakeButton').addEventListener('click', withdrawStake);
+        document.getElementById('burnButton').addEventListener('click', burnRabb);
+
+        window.ethereum?.on('chainChanged', (chainId) => {
+            if (parseInt(chainId, 16) !== 196) {
+                showModal('网络错误，请切换回X Layer网络！');
+                web3 = null;
+                contract = null;
+                accounts = null;
+                document.getElementById('walletStatus').innerText = '未连接';
+                enableInputs(false);
+            } else {
+                connectWallet();
+            }
+        });
+
+        window.ethereum?.on('accountsChanged', (newAccounts) => {
+            if (newAccounts.length) {
+                connectWallet();
+            } else {
+                showModal('钱包已断开，请重新连接！');
+                web3 = null;
+                contract = null;
+                accounts = null;
+                document.getElementById('walletStatus').innerText = '未连接';
+                enableInputs(false);
+            }
+        });
+
+        window.addEventListener('load', () => {
+            if (!window.location.protocol.startsWith('http')) {
+                showModal('请通过本地服务器运行页面（例如：npx serve）以连接MetaMask。');
+            } else if (!window.ethereum) {
+                showModal('未检测到钱包，请安装<a href="https://metamask.io" target="_blank">MetaMask</a>。');
+            }
+        });
+    </script>
+</body>
+</html>
