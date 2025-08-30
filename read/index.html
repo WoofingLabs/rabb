@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rabbit DApp 白皮书</title>
+    <title>XFist DApp 白皮书</title>
     <link rel="icon" href="https://woofingjace.com/images/jace.png" type="image/x-icon">
     <style>
         body {
@@ -90,30 +90,30 @@
 </head>
 <body>
     <div class="container">
-        <h1>Rabbit DApp 白皮书</h1>
+        <h1>XFist DApp 白皮书</h1>
         <div class="section">
             <h2>一、项目概述</h2>
-            <p>Rabbit DApp 是一个基于X Layer网络（chainId: 196）的去中心化应用，旨在通过质押和推荐机制激励用户参与网络建设与生态发展。核心代币 <span class="highlight">RABB</span> 结合节点机制和奖励系统，为用户提供公平、透明的参与机会，推动去中心化网络的繁荣。</p>
-            <p>项目部署在X Layer网络，智能合约地址为 <span class="highlight">0x44B0E9f581B011cd25E48c1486815A12122529aA</span>，通过MetaMask钱包与X Layer网络交互。本白皮书详细介绍Rabbit DApp的规则与机制。</p>
+            <p>XFist DApp 是一个基于 X Layer 网络（chainId: 196）的去中心化应用，旨在通过质押和推荐机制激励用户参与网络建设与生态发展。核心代币 <span class="highlight">XFIST</span> 结合节点机制和奖励系统，为用户提供公平、透明的参与机会，推动去中心化网络的繁荣。</p>
+            <p>项目部署在 X Layer 网络，智能合约地址为 <span class="highlight">0x0bbCeFEfC27b967c6f447E72eD952B1Bf222fa1B</span>，通过 MetaMask 钱包与 X Layer 网络交互。本白皮书详细介绍 XFist DApp 的规则与机制。</p>
         </div>
 
         <div class="section">
             <h2>二、代币机制</h2>
-            <p>Rabbit DApp 的核心代币为 <span class="highlight">RABB</span>，遵循ERC-20标准，总供应量上限为 <span class="highlight">1,000,000,000,000,000 RABB</span>。主要用途如下：</p>
+            <p>XFist DApp 的核心代币为 <span class="highlight">XFIST</span>，遵循 ERC-20 标准，总供应量上限为 <span class="highlight">1,000,000,000,000,000 XFIST</span>。主要用途如下：</p>
             <ul>
-                <li><strong>质押</strong>：用户质押RABB到节点，参与RABB奖励分配。</li>
-                <li><strong>奖励</strong>：质押、节点和推荐行为获得RABB奖励，推荐人额外获得OKB奖励（X Layer主网币）。</li>
-                <li><strong>费用</strong>：加入网络和成为节点需支付OKB。</li>
+                <li><strong>质押</strong>：用户质押 XFIST 到节点，参与 XFIST 奖励分配。</li>
+                <li><strong>奖励</strong>：质押、节点和推荐行为获得 XFIST 奖励，推荐人额外获得 OKB 奖励（X Layer 主网币）。</li>
+                <li><strong>费用</strong>：加入网络和成为节点需支付 OKB。</li>
             </ul>
         </div>
 
         <div class="section">
             <h2>三、加入网络</h2>
-            <p>用户需支付 <span class="highlight">0.1 OKB</span> 加入Rabbit网络，成为正式参与者。规则如下：</p>
+            <p>用户需支付 <span class="highlight">0.1 OKB</span> 加入 XFist 网络，成为正式参与者。规则如下：</p>
             <ul>
-                <li><strong>推荐人机制</strong>：需提供有效推荐人地址（X Layer有效地址）。若无推荐人，系统指定默认地址。</li>
-                <li><strong>费用</strong>：支付0.1 OKB，进入奖励池并支持网络运营。</li>
-                <li><strong>状态</strong>：加入后可查看推荐信息、质押状态和待领取RABB奖励。</li>
+                <li><strong>推荐人机制</strong>：可提供有效推荐人地址（X Layer 有效地址），若留空，系统将指定默认推荐人地址。</li>
+                <li><strong>费用</strong>：支付 0.1 OKB，进入奖励池并支持网络运营。</li>
+                <li><strong>状态</strong>：加入后可查看推荐信息、质押状态和待领取 XFIST 奖励。</li>
             </ul>
             <p>加入网络是参与质押和节点功能的前提，未加入用户无法操作。</p>
         </div>
@@ -122,29 +122,30 @@
             <h2>四、节点机制</h2>
             <p>用户可支付 <span class="highlight">1 OKB</span> 升级为节点，获得更高奖励权限。规则如下：</p>
             <ul>
-                <li><strong>费用</strong>：支付1 OKB，进入奖励池并支持网络维护。</li>
-                <li><strong>节点ID</strong>：分配唯一ID，用于接受质押和奖励分配。</li>
-                <li><strong>权限</strong>：节点可接受其他用户RABB质押，获得10%奖励分成（RABB）。</li>
-                <li><strong>要求</strong>：需先加入网络（支付0.1 OKB）。</li>
+                <li><strong>费用</strong>：支付 1 OKB，进入奖励池并支持网络维护。</li>
+                <li><strong>节点 ID</strong>：分配唯一 ID（最多 <span class="highlight">100,000</span> 个节点），用于接受质押和奖励分配。</li>
+                <li><strong>权限</strong>：节点可接受其他用户 XFIST 质押，获得 10% 质押奖励分成（XFIST）。</li>
+                <li><strong>要求</strong>：需先加入网络（支付 0.1 OKB）。</li>
             </ul>
-            <p>成为节点适合深度参与Rabbit生态的用户，可显著提升收益。</p>
+            <p>成为节点适合深度参与 XFist 生态的用户，可显著提升收益。</p>
         </div>
 
         <div class="section">
             <h2>五、质押规则</h2>
-            <p>用户通过质押RABB参与奖励分配，规则如下：</p>
+            <p>用户通过质押 XFIST 参与奖励分配，规则如下：</p>
             <ul>
-                <li><strong>最低质押量</strong>：每次质押为 <span class="highlight">10000 RABB</span> 的整数倍（如10000、20000等）。</li>
-                <li><strong>节点选择</strong>：需指定有效节点ID（由注册节点提供）。</li>
-                <li><strong>质押操作</strong>：通过DApp输入节点ID和质押数量，或选择余额的25%、50%、75%、100%快速质押。</li>
-                <li><strong>提取质押</strong>：随时提取RABB本金及累积RABB奖励，无锁定期。</li>
+                <li><strong>最低质押量</strong>：每次质押为 <span class="highlight">10000 XFIST</span> 的整数倍（如 10000、20000 等）。</li>
+                <li><strong>节点选择</strong>：需指定有效节点 ID（由注册节点提供）。</li>
+                <li><strong>质押操作</strong>：通过 DApp 输入节点 ID 和质押数量，或选择余额的 25%、50%、75%、100% 快速质押。</li>
+                <li><strong>提取质押</strong>：随时提取 XFIST 本金及累积 XFIST 奖励，无锁定期。</li>
+                <li><strong>限制</strong>：用户只能质押到一个节点，且不能为合约地址。</li>
             </ul>
             <p>质押是核心参与方式，质押越多，奖励越高，提取灵活无额外费用。</p>
         </div>
 
         <div class="section">
             <h2>六、奖励机制</h2>
-            <p>Rabbit DApp 通过RABB奖励激励质押和节点参与，通过OKB奖励激励推荐行为。具体规则如下：</p>
+            <p>XFist DApp 通过 XFIST 奖励激励质押和节点参与，通过 OKB 奖励激励推荐行为。具体规则如下：</p>
             <table>
                 <tr>
                     <th>奖励类型</th>
@@ -153,41 +154,41 @@
                 </tr>
                 <tr>
                     <td>待领取奖励</td>
-                    <td>实时显示累积RABB奖励（质押+推荐），精确到2位小数</td>
-                    <td>例如：<span class="highlight">123.45 RABB</span></td>
+                    <td>实时显示累积 XFIST 奖励（推荐奖励 + 质押奖励），精确到 2 位小数</td>
+                    <td>例如：<span class="highlight">123.45 XFIST</span></td>
                 </tr>
                 <tr>
-                    <td>质押奖励（RABB）</td>
-                    <td>每10000 RABB每10区块奖励，基于当前奖励基数</td>
-                    <td>初始：<span class="highlight">0.025 RABB/10区块</span><br>最低：<span class="highlight">0.0005 RABB/10区块</span></td>
+                    <td>质押奖励（XFIST）</td>
+                    <td>每 10000 XFIST 每区块奖励，基于当前奖励基数</td>
+                    <td>初始：<span class="highlight">0.00025 XFIST/区块</span><br>最低：<span class="highlight">0.000005 XFIST/区块</span></td>
                 </tr>
                 <tr>
-                    <td>节点奖励（RABB）</td>
-                    <td>节点获质押奖励的10%分成</td>
-                    <td>例：100000 RABB质押，节点获<span class="highlight">0.0025 RABB/10区块</span>（0.025 × 10%）</td>
+                    <td>节点奖励（XFIST）</td>
+                    <td>节点获质押奖励的 10% 分成</td>
+                    <td>例：100000 XFIST 质押，节点获 <span class="highlight">0.000025 XFIST/区块</span>（0.00025 × 10%）</td>
                 </tr>
                 <tr>
-                    <td>推荐奖励（RABB）</td>
-                    <td>推荐人每10区块获基础奖励+10%推荐加成/推荐人数</td>
-                    <td>初始：<span class="highlight">50 RABB/10区块</span> + <span class="highlight">5 RABB/推荐人</span><br>例：1推荐人，获<span class="highlight">55 RABB/10区块</span></td>
+                    <td>推荐奖励（XFIST）</td>
+                    <td>推荐人每区块获基础奖励 + 10% 推荐加成/推荐人数</td>
+                    <td>初始：<span class="highlight">5 XFIST/区块</span> + <span class="highlight">0.5 XFIST/推荐人</span><br>例：1 推荐人，获 <span class="highlight">5.5 XFIST/区块</span></td>
                 </tr>
                 <tr>
                     <td>推荐奖励（OKB）</td>
-                    <td>推荐人获新用户加入费用（0.1 OKB）的3%-0.5%（10层递减）</td>
-                    <td>第1层：<span class="highlight">0.03 OKB</span><br>第2层：<span class="highlight">0.02 OKB</span><br>第3-4层：<span class="highlight">0.01 OKB</span><br>第5-10层：<span class="highlight">0.005 OKB</span></td>
+                    <td>推荐人获新用户加入费用（0.1 OKB）的 3%-0.5%（10 层递减）</td>
+                    <td>第 1 层：<span class="highlight">0.03 OKB</span><br>第 2 层：<span class="highlight">0.02 OKB</span><br>第 3-4 层：<span class="highlight">0.01 OKB</span><br>第 5-10 层：<span class="highlight">0.005 OKB</span></td>
                 </tr>
                 <tr>
                     <td>领取方式</td>
-                    <td>质押和节点奖励在提取质押时自动发放，推荐OKB奖励在下级加入时发放</td>
+                    <td>质押和节点奖励在提取质押时自动发放，推荐 OKB 奖励在下级加入时发放，推荐 XFIST 奖励在下级加入或提取质押时发放</td>
                     <td>无需单独操作</td>
                 </tr>
             </table>
-            <p>奖励由智能合约透明计算，基于`rabbPerBlock`和`getCurrentStakeReward`动态调整，用户可通过DApp查看累积RABB奖励。</p>
+            <p>奖励由智能合约透明计算，基于 <span class="highlight">xFistPerBlock</span> 和 <span class="highlight">getCurrentStakeReward</span> 动态调整，用户可通过 DApp 查看累积 XFIST 奖励。</p>
         </div>
 
         <div class="section">
             <h2>七、减产机制</h2>
-            <p>Rabbit DApp 采用减产机制控制RABB奖励产出，规则如下：</p>
+            <p>XFist DApp 采用减产机制控制 XFIST 奖励产出，规则如下：</p>
             <table>
                 <tr>
                     <th>项目</th>
@@ -196,74 +197,75 @@
                 </tr>
                 <tr>
                     <td>初始奖励</td>
-                    <td>每10区块的RABB奖励基数</td>
-                    <td>推荐人：<span class="highlight">50 RABB/10区块</span><br>质押（每10000 RABB）：<span class="highlight">0.025 RABB/10区块</span></td>
+                    <td>每区块的 XFIST 奖励基数</td>
+                    <td>推荐人：<span class="highlight">5 XFIST/区块</span><br>质押（每 10000 XFIST）：<span class="highlight">0.00025 XFIST/区块</span></td>
                 </tr>
                 <tr>
                     <td>最低奖励</td>
                     <td>奖励基数的最低值</td>
-                    <td>推荐人：<span class="highlight">1 RABB/10区块</span><br>质押（每10000 RABB）：<span class="highlight">0.0005 RABB/10区块</span></td>
+                    <td>推荐人：<span class="highlight">0.1 XFIST/区块</span><br>质押（每 10000 XFIST）：<span class="highlight">0.000005 XFIST/区块</span></td>
                 </tr>
                 <tr>
                     <td>减产周期</td>
-                    <td>每6000000区块（约27.78天，0.4秒/区块）减产一次</td>
-                    <td><span class="highlight">6000000区块</span></td>
+                    <td>每 6000000 区块（约 27.78 天，0.4 秒/区块）减产一次</td>
+                    <td><span class="highlight">6000000 区块</span></td>
                 </tr>
                 <tr>
                     <td>减产幅度</td>
                     <td>每周期奖励基数减少，公式：base = 50 - (effectiveBlocks / 6000000)</td>
-                    <td>每周期减少约<span class="highlight">2%（1/50）</span></td>
+                    <td>每周期减少约 <span class="highlight">2%（1/50）</span></td>
                 </tr>
                 <tr>
                     <td>减产计划</td>
-                    <td>示例减产阶段（每6000000区块）：
+                    <td>示例减产阶段（每 6000000 区块）：
                         <ul>
-                            <li>第1周期（0-6M区块）：50 RABB，0.025 RABB（每10000 RABB）</li>
-                            <li>第2周期（6M-12M区块）：49 RABB，0.0245 RABB</li>
-                            <li>第3周期（12M-18M区块）：48 RABB，0.024 RABB</li>
+                            <li>第 1 周期（0-6M 区块）：5 XFIST，0.00025 XFIST（每 10000 XFIST）</li>
+                            <li>第 2 周期（6M-12M 区块）：4.9 XFIST，0.000245 XFIST</li>
+                            <li>第 3 周期（12M-18M 区块）：4.8 XFIST，0.00024 XFIST</li>
                             <li>…</li>
-                            <li>第50周期（294M区块后）：1 RABB，0.0005 RABB</li>
+                            <li>第 50 周期（294M 区块后）：0.1 XFIST，0.000005 XFIST</li>
                         </ul>
                     </td>
-                    <td>最大<span class="highlight">49次</span>减产</td>
+                    <td>最大 <span class="highlight">49 次</span> 减产</td>
                 </tr>
                 <tr>
                     <td>查询方式</td>
-                    <td>通过DApp或区块浏览器查看减产进度</td>
-                    <td>调用<span class="highlight">getReductionProgress</span></td>
+                    <td>通过 DApp 或区块浏览器查看减产进度</td>
+                    <td>调用 <span class="highlight">getReductionProgress</span></td>
                 </tr>
             </table>
-            <p>减产机制控制RABB通胀，激励早期参与，维持生态长期稳定。</p>
+            <p>减产机制控制 XFIST 通胀，激励早期参与，维持生态长期稳定。</p>
         </div>
 
         <div class="section">
             <h2>八、推荐系统</h2>
             <p>推荐机制激励用户邀请新用户，规则如下：</p>
             <ul>
-                <li><strong>推荐奖励（OKB）</strong>：推荐人获新用户加入费用（0.1 OKB）的3%-0.5%（10层递减），分别为0.03、0.02、0.01、0.01、0.005、0.005、0.005、0.005、0.005、0.005 OKB。</li>
-                <li><strong>推荐奖励（RABB）</strong>：推荐人每10区块获基础奖励（初始50 RABB）+10%加成/推荐人数。</li>
+                <li><strong>推荐奖励（OKB）</strong>：推荐人获新用户加入费用（0.1 OKB）的 3%-0.5%（10 层递减），分别为 0.03、0.02、0.01、0.01、0.005、0.005、0.005、0.005、0.005、0.005 OKB。</li>
+                <li><strong>推荐奖励（XFIST）</strong>：推荐人每区块获基础奖励（初始 5 XFIST）+ 10% 加成/推荐人数。</li>
                 <li><strong>推荐信息</strong>：显示推荐人数和推荐人地址（无推荐人显示“无”）。</li>
-                <li><strong>层级限制</strong>：最多10层推荐路径，确保公平分配。</li>
+                <li><strong>默认推荐人</strong>：用户可留空推荐人地址，系统将自动分配默认推荐人。</li>
+                <li><strong>层级限制</strong>：最多 10 层推荐路径，确保公平分配。</li>
             </ul>
-            <p>推荐系统通过RABB和OKB奖励激励社区增长。</p>
+            <p>推荐系统通过 XFIST 和 OKB 奖励激励社区增长。</p>
         </div>
 
         <div class="section">
             <h2>九、注意事项</h2>
-            <p>为顺利参与Rabbit DApp，请注意：</p>
+            <p>为顺利参与 XFist DApp，请注意：</p>
             <ul>
-                <li><strong>钱包要求</strong>：需MetaMask钱包，连接X Layer网络（chainId: 196，RPC: https://rpc.xlayer.tech）。</li>
-                <li><strong>费用准备</strong>：加入网络需0.1 OKB，节点需1 OKB，gas费约0.001-0.005 OKB/交易。</li>
-                <li><strong>网络环境</strong>：通过本地服务器运行DApp（例如：npx serve）。</li>
+                <li><strong>钱包要求</strong>：需 MetaMask 钱包，连接 X Layer 网络（chainId: 196，RPC: https://rpc.xlayer.tech）。</li>
+                <li><strong>费用准备</strong>：加入网络需 0.1 OKB，节点需 1 OKB，gas 费约 0.001-0.005 OKB/交易。</li>
+                <li><strong>网络环境</strong>：通过本地服务器运行 DApp（例如：npx serve）。</li>
                 <li><strong>状态检查</strong>：操作后状态可能因网络延迟稍迟，建议等待数秒刷新。</li>
-                <li><strong>合约透明</strong>：数据可通过X Layer区块浏览器（https://www.okx.com/web3/explorer/xlayer）验证。</li>
+                <li><strong>合约透明</strong>：数据可通过 X Layer 区块浏览器（https://www.okx.com/web3/explorer/xlayer）验证。</li>
             </ul>
         </div>
 
         <div class="section">
             <h2>十、总结</h2>
-            <p>Rabbit DApp 通过质押和推荐机制激励用户参与X Layer生态建设。用户可通过加入网络（0.1 OKB）、成为节点（1 OKB）、质押RABB（最低10000 RABB）及邀请新用户获得RABB奖励，推荐人额外获得OKB奖励。灵活的提取机制和透明的减产计划确保公平收益，推动去中心化金融发展。</p>
-            <p>如有疑问，请通过X Layer社区或DApp联系支持团队。让我们在Rabbit生态中掘金未来！</p>
+            <p>XFist DApp 通过质押和推荐机制激励用户参与 X Layer 生态建设。用户可通过加入网络（0.1 OKB）、成为节点（1 OKB）、质押 XFIST（最低 10000 XFIST）及邀请新用户获得 XFIST 奖励，推荐人额外获得 OKB 奖励。灵活的提取机制和透明的减产计划确保公平收益，推动去中心化金融发展。</p>
+            <p>如有疑问，请通过 X Layer 社区或 DApp 联系支持团队。让我们在 XFist 生态中掘金未来！</p>
         </div>
     </div>
 </body>
